@@ -16,6 +16,7 @@ datasource db {
 model User {
   id                String   @id @default(uuid())
   email             String   @unique
+  full_name             String
   password          String
   isEmailConfirmed  Boolean  @default(false)
   createdAt         DateTime @default(now())
