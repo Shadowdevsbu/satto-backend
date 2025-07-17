@@ -11,6 +11,11 @@ export class AuthController {
     return this.authService.signup(dto.email, dto.fname, dto.password);
   }
 
+  @Post('signin')
+  signin(@Body() dto:SignupDto){
+    return this.authService.login(dto.email, dto.password)
+  }
+   
   @Get('confirm')
   confirm(@Query('token') token: string) {
     return this.authService.confirmEmail(token);

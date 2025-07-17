@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma/prisma.service';
 import { EmailService } from './email/email.service';
 import { JwtService } from '@nestjs/jwt';
@@ -19,6 +19,7 @@ export class AuthService {
     });
 
     if (existing) throw new BadRequestException('Email already in use');
+    
 
     const hash = await bcrypt.hash(password, 10);
 
@@ -46,6 +47,33 @@ export class AuthService {
       message: 'Signup successful. Please check your email to confirm your account.',
     };
   }
+
+  async login(email: string, password: string){
+    const user = await this.prisma.user.findUnique({where: {email}})
+    if(!user){throw new UnauthorizedException("invalid credidentials")}
+    const passwordMatch = bcrypt.compare(password, user.password)
+    if(!passwordMatch){throw new UnauthorizedException("invalid credidentials")
+    }
+    if(!user.isEmailConfirmed){throw new BadRequestException("Please verify your email to login")}
+  
+    const payload = {sub: user.id, email: user.email}
+    const acessToken =  this.jwtService.sign(payload,{
+        secret: jwtConstants.secret,
+        expiresIn: jwtConstants.expiresIn
+    })
+    return{
+        message:"Login Successful",
+        acessToken,
+        user: {
+         id: user.id,
+         name: user.full_name,
+         email: user.email
+        }
+    }
+}
+
+  
+  
 
   async confirmEmail(token: string) {
     try {
