@@ -3,7 +3,7 @@ import { PrismaService } from 'src/database/prisma/prisma.service';
 import { EmailService } from './email/email.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { jwtConstants, EMAIL_CONFIRMATION_URL } from 'src/constant';
+import { jwtConstants, EMAIL_CONFIRMATION_URL, RESET_PASSWORD_URL } from 'src/constant';
 
 @Injectable()
 export class AuthService {
@@ -103,4 +103,14 @@ export class AuthService {
       throw new BadRequestException('Invalid or expired confirmation token');
     }
   }
+
+  async requestReset(email: string){
+  const user = await this.prisma.user.findUnique({where: {email}})
+  if(!user){throw new UnauthorizedException("invalid credidentials")}
+
+  const token = this.jwtService.sign({sub: user.id})
+  
+  }
+  
 }
+
