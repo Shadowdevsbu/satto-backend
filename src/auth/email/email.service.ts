@@ -1,6 +1,7 @@
+import { ResetEmailTemplate } from './template/reset-email.template';
 import { Injectable } from '@nestjs/common';
 import { Resend } from 'resend';
-import { confirmationTemplate } from './template/confirm-email.template';
+import { confirmationTemplate} from './template/confirm-email.template';
 
 @Injectable()
 export class EmailService {
@@ -13,5 +14,14 @@ export class EmailService {
       subject: 'Confirm Your Email',
       html: confirmationTemplate(confirmationUrl),
     });
+  }
+
+  async sendResetPasswordEmail(email: string, confirmationUrl){
+    await this.resend.emails.send({
+      from: process.env.EMAIL_FROM ?? 'onboarding@resend.dev', // fallback during dev
+      to: email,
+      subject: 'Confirm Your Email To Reset Password',
+      html: ResetEmailTemplate(confirmationUrl),
+    })
   }
 }
