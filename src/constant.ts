@@ -4,4 +4,4 @@ export const jwtConstants = {
   };
   
   export const EMAIL_CONFIRMATION_URL = process.env.EMAIL_CONFIRMATION_URL;
-  
+  export const RESET_PASSWORD_URL= process.env.RESET_PASSWORD_URL;
