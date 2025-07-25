@@ -20,4 +20,14 @@ export class AuthController {
   confirm(@Query('token') token: string) {
     return this.authService.confirmEmail(token);
   }
+
+  @Post("request-reset")
+  request(@Body() dto:SignupDto){
+    return this.authService.requestReset(dto.email)
+  }
+
+  @Post("reset")
+  reset(@Query('token') token: string, @Body() dto: SignupDto ){
+    return this.authService.resetPassword(token, dto.password)
+  }
 }
