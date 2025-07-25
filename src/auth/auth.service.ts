@@ -109,8 +109,13 @@ export class AuthService {
   if(!user){throw new UnauthorizedException("invalid credidentials")}
 
   const token = this.jwtService.sign({sub: user.id})
-  
+  const confirmation_url = `${RESET_PASSWORD_URL}?token=${token}`;
+  await this.emailService.sendResetPasswordEmail(email, confirmation_url);
+  return{message: "Reset link sent check your email"}
+
   }
+
+  async 
   
 }
 
