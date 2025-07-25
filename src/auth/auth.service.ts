@@ -23,7 +23,7 @@ export class AuthService {
 
     const hash = await bcrypt.hash(password, 10);
 
-    await this.prisma.user.create({
+   const user = await this.prisma.user.create({
       data: {
         email,
         full_name: fname,
@@ -33,7 +33,7 @@ export class AuthService {
     });
 
     const token = this.jwtService.sign(
-      { email },
+      {sub: user.id },
       {
         secret: jwtConstants.secret,
         expiresIn: jwtConstants.expiresIn,
@@ -77,12 +77,12 @@ export class AuthService {
 
   async confirmEmail(token: string) {
     try {
-      const payload = this.jwtService.verify(token, {
+      const {sub: userId} = this.jwtService.verify(token, {
         secret: jwtConstants.secret,
       });
 
       const user = await this.prisma.user.findUnique({
-        where: { email: payload.email },
+        where: { id: userId },
       });
 
       if (!user) {
@@ -94,7 +94,7 @@ export class AuthService {
       }
 
       await this.prisma.user.update({
-        where: { email: payload.email },
+        where: { id: userId },
         data: { isEmailConfirmed: true },
       });
 
@@ -108,14 +108,23 @@ export class AuthService {
   const user = await this.prisma.user.findUnique({where: {email}})
   if(!user){throw new UnauthorizedException("invalid credidentials")}
 
-  const token = this.jwtService.sign({sub: user.id})
+  const token = this.jwtService.sign(
+    {sub: user.id},
+    {
+      secret: jwtConstants.secret,
+      expiresIn: jwtConstants.expiresIn
+    }
+
+  )
   const confirmation_url = `${RESET_PASSWORD_URL}?token=${token}`;
   await this.emailService.sendResetPasswordEmail(email, confirmation_url);
   return{message: "Reset link sent check your email"}
 
   }
 
-  async 
+  async resetPassword(token, newPassword){
+  const {sub: userId} = this.jwtService.verify(token)
+  }
   
 }
 
