@@ -32,13 +32,7 @@ export class AuthService {
       },
     });
 
-    const token = this.jwtService.sign(
-      {sub: user.id },
-      {
-        secret: jwtConstants.secret,
-        expiresIn: jwtConstants.expiresIn,
-      },
-    );
+    const token = this.jwtService.sign({sub: user.id });
 
     const confirmationLink = `${EMAIL_CONFIRMATION_URL}?token=${token}`;
     await this.emailService.sendConfirmationEmail(email, confirmationLink);
@@ -57,10 +51,7 @@ export class AuthService {
     if(!user.isEmailConfirmed){throw new BadRequestException("Please verify your email to login")}
   
     const payload = {sub: user.id, email: user.email}
-    const acessToken =  this.jwtService.sign(payload,{
-        secret: jwtConstants.secret,
-        expiresIn: jwtConstants.expiresIn
-    })
+    const acessToken =  this.jwtService.sign(payload)
     return{
         message:"Login Successful",
         acessToken,
@@ -77,9 +68,7 @@ export class AuthService {
 
   async confirmEmail(token: string) {
     try {
-      const {sub: userId} = this.jwtService.verify(token, {
-        secret: jwtConstants.secret,
-      });
+      const {sub: userId} = this.jwtService.verify(token);
 
       const user = await this.prisma.user.findUnique({
         where: { id: userId },
@@ -108,14 +97,7 @@ export class AuthService {
   const user = await this.prisma.user.findUnique({where: {email}})
   if(!user){throw new UnauthorizedException("invalid credidentials")}
 
-  const token = this.jwtService.sign(
-    {sub: user.id},
-    {
-      secret: jwtConstants.secret,
-      expiresIn: jwtConstants.expiresIn
-    }
-
-  )
+  const token = this.jwtService.sign({sub: user.id},)
   const confirmation_url = `${RESET_PASSWORD_URL}?token=${token}`;
   await this.emailService.sendResetPasswordEmail(email, confirmation_url);
   return{message: "Reset link sent check your email"}
@@ -124,9 +106,7 @@ export class AuthService {
 
   async resetPassword(token, newPassword){
     try{
-  const {sub: userId} = this.jwtService.verify(token,
-   {secret: jwtConstants.secret}
-  )
+  const {sub: userId} = this.jwtService.verify(token)
   const user = await this.prisma.user.findUnique({where: {id: userId}})
   if(!user){throw new UnauthorizedException("Invalid Credidentials")}
   const hash = await bcrypt.hash(newPassword, 10);
