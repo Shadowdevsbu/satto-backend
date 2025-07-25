@@ -123,7 +123,17 @@ export class AuthService {
   }
 
   async resetPassword(token, newPassword){
-  const {sub: userId} = this.jwtService.verify(token)
+  const {sub: userId} = this.jwtService.verify(token,
+   {secret: jwtConstants.secret}
+  )
+  const user = await this.prisma.user.findUnique({where: {id: userId}})
+  if(!user){throw new UnauthorizedException("Invalid Credidentials")}
+  const hash = bcrypt.hash(newPassword, 10);
+  const updatePass = await this.prisma.user.update({
+    where: {id: userId},
+    data: {password: newPassword}
+  })
+  return{message: "Password Updated Successfully!!1"}
   }
   
 }
