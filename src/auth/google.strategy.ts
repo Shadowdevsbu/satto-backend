@@ -20,6 +20,7 @@ validate(
     profile: any,
     done: VerifyCallback
 ){
+    console.log('Google Profile:', JSON.stringify(profile, null, 2));
  const user = this.authService.validateGoogleUser(profile) 
 
  done(null, user)

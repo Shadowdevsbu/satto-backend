@@ -132,15 +132,15 @@ async validateGoogleUser(profile: any ): Promise<User> {
   }
 //check if email is existing to update the google id and avatar url
   user = await this.prisma.user.findUnique({
-    where: {email: profile.email[0].value}
+    where: {email: profile.emails[0]?.value}
   })
 
   if(user){
     return this.prisma.user.update({
-      where: {email: profile.email[0].value},
+      where: {email: profile.emails[0]?.value},
       data:{
         googleId: profile.id,
-        avatar_url: profile.photo[0]?.value
+        avatar_url: profile.photos[0]?.value
       }
     })
   }
@@ -148,9 +148,9 @@ async validateGoogleUser(profile: any ): Promise<User> {
   user = await this.prisma.user.create({
    data:{
     googleId: profile.id,
-    email: profile.email[0].value,
+    email: profile.emails[0]?.value,
     full_name: profile.displayName,
-    avatar_url: profile.photo[0]?.value,
+    avatar_url: profile.photos[0]?.value,
     isEmailConfirmed: true
    }
   })
