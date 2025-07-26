@@ -157,5 +157,13 @@ async validateGoogleUser(profile: any ): Promise<User> {
 
   return user
 }
+
+async generateGoogleAccessToken(user: User): Promise<{accessToken: string}>{
+  const payload = {sub: user.id, email: user.email}
+
+  return{
+    accessToken: this.jwtService.sign(payload)
+  }
+}
 }
 
