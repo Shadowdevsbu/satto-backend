@@ -22,5 +22,21 @@ model User {
   avatar_url        String?
   isEmailConfirmed  Boolean  @default(false)
   createdAt         DateTime @default(now())
+  task              Task[]
+}
+
+model Task {
+  id        Int      @id @default(autoincrement())
+  title     String
+  course    String
+  description String
+  deadline    DateTime
+  budget    Float
+  fileUrl   String
+  createdAt DateTime @default(now())
+
+  // Relation field
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
 }
 
