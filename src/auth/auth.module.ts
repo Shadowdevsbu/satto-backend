@@ -18,7 +18,7 @@ import { PassportModule } from '@nestjs/passport';
     signOptions: {expiresIn:jwtConstants.expiresIn}
   })],
   controllers: [AuthController],
-  providers: [AuthService, EmailService, GoogleStrategy, jwtStrategy],
+  providers: [AuthService, EmailService, GoogleStrategy, jwtStrategy, jwtGuard],
   exports: [jwtStrategy, jwtGuard]
 })
 export class AuthModule {}
