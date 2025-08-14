@@ -32,7 +32,6 @@ model Task {
   description String
   deadline    DateTime
   budget    Float
-  fileUrl   String
   createdAt DateTime @default(now())
 
   // Relation field
