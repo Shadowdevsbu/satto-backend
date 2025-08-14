@@ -27,7 +27,9 @@ constructor(private readonly taskService: TaskService){}
 }))
 async createTask(@Req() req, @Body() dto: CreateTaskDto, @UploadedFile
 () file: Express.Multer.File){
-
+const fileUrl = `/uploads/${file.filename}`
+const userId  = req.user.userId
+return this.taskService.createTask(dto, fileUrl, userId)
 }
 
 
