@@ -4,6 +4,7 @@ import { AuthService } from './auth.service';
 import { EmailService } from './email/email.service';
 import { GoogleStrategy } from './strategy/google.strategy';
 import { jwtStrategy } from './strategy/jwt.strategy';
+import { jwtGuard } from './guards/jwt.guards';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from 'src/constant';
 import { PassportModule } from '@nestjs/passport';
@@ -17,6 +18,7 @@ import { PassportModule } from '@nestjs/passport';
     signOptions: {expiresIn:jwtConstants.expiresIn}
   })],
   controllers: [AuthController],
-  providers: [AuthService, EmailService, GoogleStrategy],
+  providers: [AuthService, EmailService, GoogleStrategy, jwtStrategy],
+  exports: [jwtStrategy, jwtGuard]
 })
 export class AuthModule {}
