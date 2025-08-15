@@ -3,7 +3,7 @@ import { PrismaService } from 'src/database/prisma/prisma.service';
 import { EmailService } from './email/email.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { jwtConstants, EMAIL_CONFIRMATION_URL, RESET_PASSWORD_URL } from 'src/constant';
+import { EMAIL_CONFIRMATION_URL, RESET_PASSWORD_URL } from 'src/constant';
 import { User } from '@prisma/client';
 
 @Injectable()
@@ -19,19 +19,21 @@ export class AuthService {
       where: { email },
     });
 
-    if (existing){
-      if (!existing.isEmailConfirmed) {
-        // Resend verification link
-        const token = this.jwtService.sign({ sub: existing.id });
-        const confirmationLink = `${EMAIL_CONFIRMATION_URL}?token=${token}`;
-        await this.emailService.sendConfirmationEmail(email, confirmationLink);
-  
-        return {
-          message: 'Signup successful. Please check your email to confirm your account.',
-        };
-      }
+    if (existing) {
+      if (existing.isEmailConfirmed) {
         throw new BadRequestException('Email already in use');
-    } 
+      }
+    
+      // If email exists but not confirmed, resend verification
+      const token = this.jwtService.sign({ sub: existing.id });
+      const confirmationLink = `${EMAIL_CONFIRMATION_URL}?token=${token}`;
+      await this.emailService.sendConfirmationEmail(email, confirmationLink);
+    
+      return {
+        message: 'Please check your email to confirm your account.',
+      };
+    }
+    
     
 
     const hash = await bcrypt.hash(password, 10);

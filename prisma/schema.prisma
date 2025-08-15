@@ -13,11 +13,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role{
+ student
+ solver
+}
 model User {
   id                String   @id @default(uuid())
   email             String   @unique
   full_name         String?
   password          String?
+  role              Role @default(student)
   googleId          String?  @unique
   avatar_url        String?
   isEmailConfirmed  Boolean  @default(false)
