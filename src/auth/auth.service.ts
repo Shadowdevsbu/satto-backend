@@ -5,16 +5,19 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { EMAIL_CONFIRMATION_URL, RESET_PASSWORD_URL } from 'src/constant';
 import { User } from '@prisma/client';
+import { Role } from './enum/role.enum';
 
 @Injectable()
 export class AuthService {
+ 
   constructor(
     private prisma: PrismaService,
     private emailService: EmailService,
     private jwtService: JwtService,
   ) {}
 
-  async signup(email: string, fname: string, password: string) {
+  
+  async signup(email: string, fname: string, password: string, role: Role) {
     const existing = await this.prisma.user.findUnique({
       where: { email },
     });
@@ -43,6 +46,7 @@ export class AuthService {
         email,
         full_name: fname,
         password: hash,
+        role: role,
         isEmailConfirmed: false,
       },
     });
